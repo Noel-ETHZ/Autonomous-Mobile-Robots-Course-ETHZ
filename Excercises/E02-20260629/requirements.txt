@@ -1,0 +1,7 @@
+pin
+numpy
+jupyterlab
+example_robot_data
+example_robot_data_loaders
+meshcat
+matplotlib
