@@ -14,7 +14,12 @@ class RadialTangentialDistortion:
         self.p2 = p2
         
     def distort(self, uUndistorted):
-        uDistorted = uUndistorted # TODO: implement distortion model
+        x_dash = uUndistorted[0]
+        y_dash = uUndistorted[1]
+        r = np.sqrt(x_dash**2 + y_dash**2)
+        k = (1+self.k1*(r**2)+self.k2*(r**4))
+        uDistorted = np.array([k*x_dash + 2*self.p1*x_dash*y_dash + self.p2*(r**2+2*x_dash**2),
+                               k*y_dash + 2*self.p2*x_dash*y_dash + self.p1*(r**2+2*y_dash**2)])
         return uDistorted
     
     def undistort(self, uDistorted):
@@ -40,16 +45,18 @@ class PinholeCamera:
         self.distortion = distortion
 
     def project(self, x):
-        # TODO
+        
         return []
         
     def p(self, x):
-        # TODO
-        return []
+        tx = x[0]
+        ty = x[1]
+        tz = x[2]
+        return [1/tz * tx, 1/tz * ty]
     
     def p_inverse(self, x_dash):
-        # TODO
-        return []
+
+        return np.stack[x_dash, 1]
             
     def d(self, x_dash):
         if self.distortion is not None:
@@ -64,12 +71,13 @@ class PinholeCamera:
             return x_ddash
 
     def k(self, x_ddash):
-        # TODO
-        return []
+        x1_ddash = x_ddash[0]
+        x2_ddash = x_ddash[1]
+        return [self.f1 * x1_ddash + self.c1, self.f2 * x2_ddash + self.c2]
     
     def k_inverse(self, u):
-        # TODO
-        return []
+        
+        return [1/self.f1 * (u[0]-self.c1), 1/self.f2 * (u[1]-self.c2)]
     
     def backproject(self, u):
         x_ddash = self.k_inverse(u)
